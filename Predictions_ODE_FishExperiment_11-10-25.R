@@ -258,20 +258,105 @@ palette <- c(
   nopref  ="#77AADD"
 )
 
+
 a1 = ggplot(data=NaupLong,aes(x=Time,y=value,group=scenario,color=scenario)) + geom_line(linewidth=1.5) +theme_classic(base_size = 20) +
-  labs(x="Time (days)",y=expression('Nauplii Density, L' ^ -1)) + scale_color_manual(labels = c(control = "Control (No Fish)",nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) + scale_y_log10()
-
+  labs(x="Time (days)",y=expression('Nauplii Density, L' ^ -1)) + scale_color_manual(labels = c(control = "Control (No Fish)",nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + 
+  guides(color = guide_legend(title = "Fish Scenario")) +
+  scale_y_continuous(limits = c(0, NA)) 
 b1 = ggplot(data=JuvLong,aes(x=Time,y=value,group=scenario,color=scenario)) + geom_line(linewidth=1.5) + theme_classic(base_size = 20) +
-  labs(x="Time (days)",y=expression('Juvenile Density, L' ^ -1)) + scale_color_manual(labels = c(control = "Control (No Fish)",nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) + scale_y_log10()
-
+  labs(x="Time (days)",y=expression('Juvenile Density, L' ^ -1)) + scale_color_manual(labels = c(control = "Control (No Fish)",nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) +
+  scale_y_continuous(limits = c(0, NA)) 
 c1 = ggplot(data=AdLong,aes(x=Time,y=value,group=scenario,color=scenario)) + geom_line(linewidth=1.5) + theme_classic(base_size = 20)+
-  labs(x="Time (days)",y=expression('Adult Density, L' ^ -1)) + scale_color_manual(labels = c(control = "Control (No Fish)",nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) + scale_y_log10()
-
+  labs(x="Time (days)",y=expression('Adult Density, L' ^ -1)) + scale_color_manual(labels = c(control = "Control (No Fish)",nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) +
+ scale_y_continuous(limits = c(0, NA)) 
 library(ggpubr)
 ggarrange(a1,b1,c1,
           nrow = 1, ncol = 3,
           common.legend = TRUE,
           legend = "right")
+
+
+
+#predator gradient
+preds_gradient <- seq(0, 0.4, by = 0.01)
+
+#scenarios
+scenario_params <- list(
+  nopref = c(VOL = 1, f = 1, f_J = 1, f_N = 1,
+             h = 0.006, h_J = 0.1, h_N = 0.01, i_P = 0),
+  
+  prefadults = c(VOL = 1, f=1,f_J=0.1,f_N=0.01,
+                 h = 0.006, h_J = 0.1, h_N = 0.01, i_P = 0)
+)
+
+
+sim_results <- list()
+
+for (s in names(scenario_params)) {
+  for (p in preds_gradient) {
+    
+    # update parameters
+    parameters <- c(pars,
+                    Preds = p,
+                    scenario_params[[s]])
+    
+    # run simulation
+    sim <- ode(
+      y = Initial_conditions,
+      times = 1:timespan,
+      parms = parameters,
+      method = "lsoda",
+      func = FishODE
+    )
+    
+    # store results
+    sim_df <- as.data.frame(sim) %>%
+      mutate(Preds = p,
+             Scenario = s)
+    
+    sim_results[[paste(s, p, sep = "_")]] <- sim_df
+  }
+}
+
+# bind into one dataframe
+all_sims <- bind_rows(sim_results, .id = "run_id")
+
+
+endpoints <- all_sims %>%
+  group_by(Scenario, Preds) %>%
+  slice_tail(n = 1) %>%   # last time step
+  ungroup()
+
+palette <- c(
+  prefadults = "deeppink2",
+  nopref  ="#77AADD"
+)
+
+PredsN = ggplot(endpoints, aes(x = Preds, y = N, color = Scenario)) +
+  geom_line(size = 1.5) +
+  theme_classic(base_size = 20) +
+  labs(x=expression('Fish Density, L' ^ -1), y=expression('Nauplii Density, L' ^ -1)) + scale_color_manual(labels = c(nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) 
+PredsJ = ggplot(endpoints, aes(x = Preds, y = J, color = Scenario)) + 
+  geom_line(size = 1.5) +
+  theme_classic(base_size = 20) +
+  labs(x=expression('Fish Density, L' ^ -1), y=expression('Juvenile Density, L' ^ -1)) + scale_color_manual(labels = c(nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) 
+PredsA = ggplot(endpoints, aes(x = Preds, y = A, color = Scenario)) +
+  geom_line(size = 1.5) +
+  theme_classic(base_size = 20) + labs(x=expression('Fish Density, L' ^ -1), y=expression('Adult Density, L' ^ -1)) + scale_color_manual(labels = c(nopref="No Preference",prefadults="Preference for Adults"),values = palette, name = "scenario") + guides(color = guide_legend(title = "Fish Scenario")) 
+
+#####figure in main text####
+library(ggpubr)
+ggarrange(a1,b1,c1, PredsN,PredsJ,PredsA,
+          nrow = 2, ncol = 3,
+          common.legend = TRUE,
+          legend = "right")
+
+
+
+
+
+
+
 
 
 #plot 1) exclusive for adults, 2) no preference, and 3) control
