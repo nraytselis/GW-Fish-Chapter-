@@ -124,12 +124,81 @@ total = ggplot(merged_df_summary, aes(x = time, y = mean_total)) +
              color = "#3C7DB1", size = 2) + 
   facet_wrap(~ FishDensity,
              nrow = 3, ncol = 3) +   
-  labs(x = "Time (days)", y = expression('Total Copepod Density, L' ^ -1)) +
+  labs(x = "Time (days)", y = "Total Copepod Abundance") +
   theme_classic(base_size = 20) + 
   theme(legend.position = "none") 
 
 total
 
+
+Juveniles = ggplot(merged_df_summary, aes(x = time, y = mean_J)) +
+  geom_ribbon(aes(ymin=lower_ci_J, ymax=upper_ci_J), 
+              fill = "grey", alpha = 0.5) +
+  geom_line(color = "black", linewidth=1) +
+  theme_classic() + 
+  geom_line(data = Fish_Time_Series_summary, 
+            aes(x = Day, y = mean_J), 
+            color = "#3C7DB1", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+                aes(x = Day, ymin = mean_J - se_J, ymax = mean_J + se_J)) +
+  geom_point(data = Fish_Time_Series_summary, 
+             aes(x = Day, y = mean_J), 
+             color = "#3C7DB1", size = 2) + 
+  facet_wrap(~ FishDensity,
+             nrow = 2, ncol = 3) +   
+  labs(x = "Time (days)", y = "Total Juvenile Abundance") +
+  theme_classic(base_size = 20) + 
+  theme(legend.position = "none")
+
+Juveniles
+
+Adult = ggplot(merged_df_summary, aes(x = time, y = mean_A)) +
+  geom_ribbon(aes(ymin=lower_ci_A, ymax=upper_ci_A), 
+              fill = "grey", alpha = 0.5) +
+  geom_line(color = "black", linewidth=1) +
+  theme_classic() + 
+  geom_line(data = Fish_Time_Series_summary, 
+            aes(x = Day, y = mean_A), 
+            color = "#3C7DB1", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+                aes(x = Day, ymin = mean_A - se_A, ymax = mean_A + se_A)) +
+  geom_point(data = Fish_Time_Series_summary, 
+             aes(x = Day, y = mean_A), 
+             color = "#3C7DB1", size = 2) + 
+  facet_wrap(~ FishDensity,
+             nrow = 2, ncol = 3) +   
+  labs(x = "Time (days)", y = "Total Adult Abundance") +
+  theme_classic(base_size = 20) + 
+  theme(legend.position = "none")
+
+Adult
+
+Nauplii = ggplot(merged_df_summary, aes(x = time, y = mean_N)) +
+  geom_ribbon(aes(ymin=lower_ci_N, ymax=upper_ci_N), 
+              fill = "grey", alpha = 0.5) +
+  geom_line(color = "black", linewidth=1) +
+  theme_classic() + 
+  geom_line(data = Fish_Time_Series_summary, 
+            aes(x = Day, y = mean_N), 
+            color = "#3C7DB1", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+                aes(x = Day, ymin = mean_N - se_N, ymax = mean_N + se_N)) +
+  geom_point(data = Fish_Time_Series_summary, 
+             aes(x = Day, y = mean_N), 
+             color = "#3C7DB1", size = 2) + 
+  facet_wrap(~ FishDensity,
+             nrow = 2, ncol = 3) +   
+  labs(x = "Time (days)", y = "Total Nauplii Abundance") +
+  theme_classic(base_size = 20) + 
+  theme(legend.position = "none")
+
+
+Nauplii
+
+ggarrange(Adult,Juveniles,Nauplii,
+          nrow = 1, ncol = 3,
+          common.legend = TRUE,
+          legend = "right")
 
 
 
