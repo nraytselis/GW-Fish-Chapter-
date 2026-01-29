@@ -79,7 +79,7 @@ Fish_Time_Series <- left_join(Fish_Time_Series, Fishtreatments, by = "unit")
 Fish_Time_Series$FishDensity[Fish_Time_Series$FishDensity == 0.275] <- 0.3
 
 #calculate copepods per tank (one replicated)
-Fish_Time_Series = Fish_Time_Series %>% mutate(Adults_per_Tank = 0.5*(AF1/counted_volume1+AF2/counted_volume2)*20*40,
+Fish_Time_Series = Fish_Time_Series %>% mutate(Adults_per_Tank = 0.5*(AF1/counted_volume1+AF2/counted_volume2)*20*VOL,
                                                Juveniles_per_tank = 0.5*(JOA1/counted_volume1+JOA2/counted_volume2)*20*VOL,
                                                Nauplii_per_Tank = 0.5*(N1/counted_volume1+N2/counted_volume2)*20*VOL,
                                                total = 0.5*((AF1+JOA1+N1)/counted_volume1+(AF2+JOA2+N2)/counted_volume2)*20*VOL) 
@@ -109,19 +109,19 @@ Fish_Time_Series_summary = Fish_Time_Series %>% group_by(Day,FishDensity) %>% su
                                                                                               se_total = sd(total) / sqrt(n_total)) 
 
 
-total = ggplot(merged_df_summary, aes(x = time, y = mean_total)) +
+total = ggplot(merged_df_summary, aes(x = time, y = mean_total)) +geom_vline(xintercept = 49,color="blue",linewidth=1.5) +
   geom_ribbon(aes(ymin=lower_ci_total, ymax=upper_ci_total), 
               fill = "grey", alpha = 0.5) +
-  geom_line(color = "black", linewidth=1) +
+  geom_line(color = "darkgrey", linewidth=1) +
   theme_classic() + 
   geom_line(data = Fish_Time_Series_summary, 
             aes(x = Day, y = mean_total), 
-            color = "#3C7DB1", linewidth=1) +   
-  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+            color = "black", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "black",
                 aes(x = Day, ymin = mean_total - se_total, ymax = mean_total + se_total)) +
   geom_point(data = Fish_Time_Series_summary, 
              aes(x = Day, y = mean_total), 
-             color = "#3C7DB1", size = 2) + 
+             color = "black", size = 2) + 
   facet_wrap(~ FishDensity,
              nrow = 3, ncol = 3) +   
   labs(x = "Time (days)", y = "Total Copepod Abundance") +
@@ -131,19 +131,19 @@ total = ggplot(merged_df_summary, aes(x = time, y = mean_total)) +
 total
 
 
-Juveniles = ggplot(merged_df_summary, aes(x = time, y = mean_J)) +
+Juveniles = ggplot(merged_df_summary, aes(x = time, y = mean_J)) +geom_vline(xintercept = 49,color="blue",linewidth=1.5) +
   geom_ribbon(aes(ymin=lower_ci_J, ymax=upper_ci_J), 
               fill = "grey", alpha = 0.5) +
-  geom_line(color = "black", linewidth=1) +
+  geom_line(color = "darkgrey", linewidth=1) +
   theme_classic() + 
   geom_line(data = Fish_Time_Series_summary, 
             aes(x = Day, y = mean_J), 
-            color = "#3C7DB1", linewidth=1) +   
-  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+            color = "black", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "black",
                 aes(x = Day, ymin = mean_J - se_J, ymax = mean_J + se_J)) +
   geom_point(data = Fish_Time_Series_summary, 
              aes(x = Day, y = mean_J), 
-             color = "#3C7DB1", size = 2) + 
+             color = "black", size = 2) + 
   facet_wrap(~ FishDensity,
              nrow = 2, ncol = 3) +   
   labs(x = "Time (days)", y = "Total Juvenile Abundance") +
@@ -152,19 +152,19 @@ Juveniles = ggplot(merged_df_summary, aes(x = time, y = mean_J)) +
 
 Juveniles
 
-Adult = ggplot(merged_df_summary, aes(x = time, y = mean_A)) +
+Adult = ggplot(merged_df_summary, aes(x = time, y = mean_A)) +geom_vline(xintercept = 49,color="blue",linewidth=1.5) +
   geom_ribbon(aes(ymin=lower_ci_A, ymax=upper_ci_A), 
               fill = "grey", alpha = 0.5) +
-  geom_line(color = "black", linewidth=1) +
+  geom_line(color = "darkgrey", linewidth=1) +
   theme_classic() + 
   geom_line(data = Fish_Time_Series_summary, 
             aes(x = Day, y = mean_A), 
-            color = "#3C7DB1", linewidth=1) +   
-  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+            color = "black", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "black",
                 aes(x = Day, ymin = mean_A - se_A, ymax = mean_A + se_A)) +
   geom_point(data = Fish_Time_Series_summary, 
              aes(x = Day, y = mean_A), 
-             color = "#3C7DB1", size = 2) + 
+             color = "black", size = 2) + 
   facet_wrap(~ FishDensity,
              nrow = 2, ncol = 3) +   
   labs(x = "Time (days)", y = "Total Adult Abundance") +
@@ -173,19 +173,19 @@ Adult = ggplot(merged_df_summary, aes(x = time, y = mean_A)) +
 
 Adult
 
-Nauplii = ggplot(merged_df_summary, aes(x = time, y = mean_N)) +
+Nauplii = ggplot(merged_df_summary, aes(x = time, y = mean_N)) +geom_vline(xintercept = 49,color="blue",linewidth=1.5) +
   geom_ribbon(aes(ymin=lower_ci_N, ymax=upper_ci_N), 
               fill = "grey", alpha = 0.5) +
-  geom_line(color = "black", linewidth=1) +
+  geom_line(color = "darkgrey", linewidth=1) +
   theme_classic() + 
   geom_line(data = Fish_Time_Series_summary, 
             aes(x = Day, y = mean_N), 
-            color = "#3C7DB1", linewidth=1) +   
-  geom_errorbar(data = Fish_Time_Series_summary, color = "#3C7DB1",
+            color = "black", linewidth=1) +   
+  geom_errorbar(data = Fish_Time_Series_summary, color = "black",
                 aes(x = Day, ymin = mean_N - se_N, ymax = mean_N + se_N)) +
   geom_point(data = Fish_Time_Series_summary, 
              aes(x = Day, y = mean_N), 
-             color = "#3C7DB1", size = 2) + 
+             color = "black", size = 2) + 
   facet_wrap(~ FishDensity,
              nrow = 2, ncol = 3) +   
   labs(x = "Time (days)", y = "Total Nauplii Abundance") +
