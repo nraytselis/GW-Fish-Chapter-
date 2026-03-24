@@ -201,4 +201,3 @@ ggarrange(Adult,Juveniles,Nauplii,
           legend = "right")
 
 
-

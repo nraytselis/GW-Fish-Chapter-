@@ -123,12 +123,14 @@ Exposed_values
 Initial_conditions = c(N = 500, J=1000 , A=50, Exposed_values, I = 0, L3F = 0)
 timespan = 365
 
+
 #Run pond simulation
 PondSim = data.frame(ode(y = Initial_conditions, times=1:timespan, parms=parameters, hmax=1,
                          method="lsoda", func=Pond_ODE)) 
 
 # Fitted model is black
 plot(L3F ~ time, data=PondSim, typ="l")
+
 
 parameters2 = parameters
 parameters2[c("f_N", "f_J")] = 1
@@ -365,3 +367,69 @@ ggarrange(L3F,I,
           legend = "none") 
 
 
+
+
+
+###UVM
+paletteA <- c(
+  "L3F" = "black",
+  "L3F_noHF" = "red" 
+)
+
+L3Fdata = predsdf %>% filter(grepl("L3F", Model)) 
+InfectedCopesdata = predsdf %>% filter(grepl("I", Model)) 
+
+
+L3FSelectiveBoth = L3Fdata %>% filter(Model == "L3F" | Model == "L3F_noHF")
+
+
+L3Fplot = ggplot(data = L3FSelectiveBoth, aes(x = Preds,y = Value, group = Model, color = Model)) + geom_line(linewidth = 1.5) + scale_color_manual(values = paletteA,
+                                                                                                                                                    labels = c("Preference for Adults", "No Preference")) +
+  theme_classic() + labs(x = expression('Fish Density, L' ^ -1), y = expression('L3 in Fish (L3F), L' ^ -1)) +
+  theme(axis.title.x = element_blank()) + 
+  theme(axis.text.x = element_blank()) + 
+  theme(axis.ticks.x = element_blank()) +
+  theme(
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14),
+    plot.title = element_text(size = 18)
+  ) 
+
+paletteB <- c(
+  "I" = "black",
+  "I_noHF"  = "red"
+)
+
+
+InfectedCopesSelectiveBoth = InfectedCopes %>% filter(Model == "I" | Model == "I_noHF")
+Iplot = ggplot(data = InfectedCopesSelectiveBoth, aes(x = Preds,y = Value, group = Model, color = Model)) + geom_line(linewidth=1.5) + scale_color_manual(values = paletteB, labels = c("Preference for Adults", "No Preference")) +
+  theme_classic() + labs (x = expression('Fish Density, L' ^ -1), y = expression('L3 in Copepods (I), L' ^ -1))  +
+  theme(
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14),
+    plot.title = element_text(size = 18)
+  ) 
+
+
+library(ggpubr)
+ggarrange(L3Fplot,Iplot,
+          nrow = 2, ncol = 1,
+          common.legend = TRUE,
+          legend = "right") 
+
+Iplot + labs(x = expression('Fish Density, L' ^ -1), y=expression('Infectious Copepods, L' ^ -1)) 
+L3Fplot + labs(x = expression('Fish Density, L' ^ -1), y=expression('Fish with GW Infections, L' ^ -1)) 
+
+ggplot(data = L3FSelectiveBoth, aes(x = Preds,y = Value, group = Model, color = Model)) + geom_line(linewidth = 1.5) + scale_color_manual(values = paletteA,
+                                                                                                                                                    labels = c("Preference for Adults", "No Preference")) +
+  theme_classic() + labs(x = expression('Fish Density, L' ^ -1), y = expression('Fish with GW Infections, L' ^ -1)) +theme(
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14),
+    plot.title = element_text(size = 18)
+  ) 

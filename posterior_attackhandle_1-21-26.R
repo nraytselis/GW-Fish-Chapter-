@@ -17,21 +17,21 @@ chainsCconverged = chainsC[-c(1,6,7)]
 
 fishchains = c(chainsAconverged,chainsBconverged,chainsCconverged)
 
-# #get best fit
-# get_best_fit = function(chain.list){
-#   L = length(chain.list)
-#   chain.scores = numeric()
-#   for(i in 1:L){
-#     chain.scores[i] = max(chain.list[[i]]$log.p)
-#   }
-#   list(chain.list[[which.max(chain.scores)]]$samples[which.max(chain.list[[which.max(chain.scores)]]$log.p),],
-#        chain.list[[which.max(chain.scores)]]$cov.jump,
-#        max(chain.list[[which.max(chain.scores)]]$log.p))
-#   
-# }
-# 
-# samps = get_best_fit(fishchains)
-# parameters = samps[[1]]
+#get best fit
+get_best_fit = function(chain.list){
+  L = length(chain.list)
+  chain.scores = numeric()
+  for(i in 1:L){
+    chain.scores[i] = max(chain.list[[i]]$log.p)
+  }
+  list(chain.list[[which.max(chain.scores)]]$samples[which.max(chain.list[[which.max(chain.scores)]]$log.p),],
+       chain.list[[which.max(chain.scores)]]$cov.jump,
+       max(chain.list[[which.max(chain.scores)]]$log.p))
+
+}
+
+samps = get_best_fit(fishchains)
+parameters = samps[[1]]
 # variances = samps[[2]]
 
 f = numeric()
@@ -78,7 +78,7 @@ attack_Mean_SE = merge(seattacklong,meanattacklong,by="stage")
 attack = ggplot(data=attack_Mean_SE,aes(x=stage,y=mean)) + geom_point(size = 4) + 
   geom_errorbar(data = attack_Mean_SE,
                 aes(x = stage, ymin = mean - SE, ymax = mean + SE, width = 0.05)) + theme_classic() +
-  labs(x = "Copepod Stage", y = expression('Average Attack Rate, Day, L' ^ -1),  ) + theme(axis.title.x = element_blank()) + 
+  labs(x = "Copepod Stage", y = expression('Average Attack Rate, L/Day' ^ -1),  ) + theme(axis.title.x = element_blank()) + 
   theme(axis.text.x = element_blank()) + 
   theme(axis.ticks.x = element_blank()) +
   theme(
@@ -111,7 +111,7 @@ handle_Mean_SE = merge(sehandlelong,meanhandlelong,by="stage")
 handling = ggplot(data=handle_Mean_SE,aes(x=stage,y=mean)) + geom_point(size = 4) + 
   geom_errorbar(data = handle_Mean_SE,
                 aes(x = stage, ymin = mean - SE, ymax = mean + SE, width = 0.05)) + theme_classic() +
-  labs(x = "Copepod Stage", y = expression('Average Handling Time/Day x'*10^-5*'')) + 
+  labs(x = "Copepod Stage", y = expression('Average Handling Time,Day x'*10^-5*'')) + 
   theme(
     axis.title = element_text(size = 20),
     axis.text = element_text(size = 15),
